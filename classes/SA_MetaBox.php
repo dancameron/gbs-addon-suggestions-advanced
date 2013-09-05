@@ -23,10 +23,10 @@ class SA_MetaBox {
 
 		// Is suggested Deal
 		$checked = $suggestion->is_suggested_deal();
-		printf( '<p><label for="%s"><input type="checkbox" name="%s" %s /> %s</label></p>', self::OPTION_NAME, self::OPTION_NAME, checked( $checked, TRUE, FALSE ), gb__( 'This is a suggested deal.' ) );
+		printf( '<p><label><input type="checkbox" name="%s" %s /> %s</label></p>', self::OPTION_NAME, checked( $checked, TRUE, FALSE ), gb__( 'This is a suggested deal.' ) );
 
 		$threshold = ( $suggestion->get_threshold() ) ? $suggestion->get_threshold() : 10 ;
-		printf( '<p><label for="%s">%s&nbsp;<input type="number" value="%s" name="%s" min="1" style="width:4em;"/></label>.</p>', self::VOTES_OPTION_NAME, gb__( 'The voting threshold will be' ), $threshold, self::VOTES_OPTION_NAME );
+		printf( '<p><label>%s&nbsp;<input type="number" value="%s" name="%s" min="1" style="width:4em;"/></label>.</p>', gb__( 'The voting threshold will be' ), $threshold, self::VOTES_OPTION_NAME );
 	}
 
 	public static function save_meta_box( $post_id, $post ) {
