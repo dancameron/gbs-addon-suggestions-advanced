@@ -1,7 +1,7 @@
 <?php
 
-if ( !class_exists('Services_Twilio') ) {
-	require GB_SMS_NOTES_PATH . 'lib/twilio-php/Services/Twilio.php';
+if ( !class_exists( 'Services_Twilio' ) ) {
+	require GB_SUGGESTIONS_ADVANCED_PATH . 'lib/twilio-php/Services/Twilio.php';
 }
 
 class SA_Twilio extends Group_Buying_Controller {

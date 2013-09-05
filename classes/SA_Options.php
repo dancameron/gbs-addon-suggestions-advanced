@@ -20,7 +20,7 @@ class SA_Options extends Group_Buying_Controller {
 	public static function register_settings_fields() {
 		$page = Group_Buying_UI::get_settings_page();
 		$section = 'gb_twilio_settings';
-		add_settings_section( $section, self::__( 'SMS Alerts: Twilio settings' ), array( get_class(), 'display_settings_section' ), $page );
+		add_settings_section( $section, self::__( 'Suggested Deals: Twilio settings' ), array( get_class(), 'display_settings_section' ), $page );
 		// Settings
 		register_setting( $page, self::ACCOUNT );
 		register_setting( $page, self::AUTH );

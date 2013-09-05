@@ -1,40 +1,32 @@
 <?php
 
 class SA_MetaBox {
+	const OPTION_NAME = 'gb_suggested_deal';
+	const VOTES_OPTION_NAME = 'gb_suggested_deal_vote_threshold';
+
 	public static function init() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_box' ), 10, 0 );
 		add_action( 'save_post', array( __CLASS__, 'save_meta_box' ), 10, 2 );
 	}
 
-
 	public function get_deals_numbers( $deal_id ) {
 		$meta = get_post_meta( $deal_id, SMS_Checkout_Notes_Addon::META_KEY, TRUE );
 		return $meta;
 	}
-	public function get_deals_numbers_array( $deal_id ) {
-		$meta = self::get_deals_numbers( $deal_id );
-
-		if ( !$meta )
-			return FALSE;
-
-		if ( !is_array( $meta ) ) {
-			$array = explode( ',', $meta );
-			return self::trim_array( $array );
-		}
-		return $meta;
-	}
 
 	public static function add_meta_box() {
-		add_meta_box( 'gbs_sharing_rewards', gb__( 'SMS Checkout Notes' ), array( __CLASS__, 'show_meta_box' ), Group_Buying_Deal::POST_TYPE, 'side' );
+		add_meta_box( 'suggested', gb__( 'Suggested' ), array( __CLASS__, 'show_meta_box' ), Group_Buying_Deal::POST_TYPE, 'side' );
 	}
 
 	public static function show_meta_box( $post ) {
-		$numbers = self::get_deals_numbers( $post->ID, FALSE );
-		printf( '<label for="">%s</label>', gb__( 'Numbers to send after purchase. Comma seperated list.' ) );
-		printf( '<input type="text" value="%s" name="gbs_sms_checkout_notes" />', $numbers );
-		printf( '<p class="description">%s</p>', gb__( 'Numbers must be the complete and 11 numbers in length, e.g. 18057654321.' ) );
-		//prp( self::get_deals_numbers_array($post->ID) );
+		$suggestion = SA_Post_Type::get_instance( $post->ID );
 
+		// Is suggested Deal
+		$checked = $suggestion->is_suggested_deal();
+		printf( '<p><label for="%s"><input type="checkbox" name="%s" %s /> %s</label></p>', self::OPTION_NAME, self::OPTION_NAME, checked( $checked, TRUE, FALSE ), gb__( 'This is a suggested deal.' ) );
+
+		$threshold = ( $suggestion->get_threshold() ) ? $suggestion->get_threshold() : 10 ;
+		printf( '<p><label for="%s">%s&nbsp;<input type="number" value="%s" name="%s" min="1" style="width:4em;"/></label>.</p>', self::VOTES_OPTION_NAME, gb__( 'The voting threshold will be' ), $threshold, self::VOTES_OPTION_NAME );
 	}
 
 	public static function save_meta_box( $post_id, $post ) {
@@ -43,25 +35,14 @@ class SA_MetaBox {
 			return;
 		}
 		// don't do anything on autosave, auto-draft, bulk edit, or quick edit
-		if ( empty( $_POST['gbs_sms_checkout_notes'] ) || wp_is_post_autosave( $post_id ) || $post->post_status == 'auto-draft' || defined( 'DOING_AJAX' ) || isset( $_GET['bulk_edit'] ) ) {
+		if ( empty( $_POST[self::VOTES_OPTION_NAME] ) || wp_is_post_autosave( $post_id ) || $post->post_status == 'auto-draft' || defined( 'DOING_AJAX' ) || isset( $_GET['bulk_edit'] ) ) {
 			return;
 		}
-		update_post_meta( $post_id, SMS_Checkout_Notes_Addon::META_KEY, $_POST['gbs_sms_checkout_notes'] );
-	}
-
-	/**
-	 * Trim inputs and arrays
-	 * @param  string/array $value value/s to trim
-	 * @return
-	 */
-	public static function trim_array( $array ) {
-		if ( is_array( $array ) ) {
-			$return = array();
-			foreach ( $array as $k => $v ) {
-				$return[$k] = is_array( $v ) ? self::trim_input( $v ) : trim( $v );
-			}
-			return $return;
+		$suggestion = SA_Post_Type::get_instance( $post->ID );
+		$suggestion->unmake_suggested_deal();
+		if ( $_POST[self::OPTION_NAME] ) {
+			$suggestion->make_suggested_deal();
 		}
-		return trim( $array );
+		$suggestion->set_threshold( $_POST[self::VOTES_OPTION_NAME] );
 	}
 }
