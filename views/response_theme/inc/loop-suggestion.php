@@ -20,7 +20,7 @@
 
 		<div class="deal_meta_wrapper suggestion_wrap contrast">
 			<?php if ( gb_suggested_can_vote() ): ?>
-				<?php gb_suggestion_button();  ?>
+				<?php gb_suggestion_form();  ?>
 			<?php else: ?>
 				<span class="cannot_vote cloak"><?php gb_e('Thank you for your vote!')  ?></span>	
 			<?php endif ?>

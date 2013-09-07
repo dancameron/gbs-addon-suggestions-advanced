@@ -25,7 +25,7 @@
 								'inc/suggestion.php',
 							), FALSE);
 						if ( $template == FALSE ) {
-							$template = SUGGESTIONS_PATH . '/views/' . GBS_THEME_SLUG . '/inc/loop-suggestion.php';
+							$template = GB_SUGGESTIONS_ADVANCED_PATH . '/views/' . GBS_THEME_SLUG . '/inc/loop-suggestion.php';
 						}
 						include($template);
 						?>

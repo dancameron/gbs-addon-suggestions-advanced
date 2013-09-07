@@ -11,7 +11,7 @@ Text Domain: group-buying
 
 
 define( 'GB_SUGGESTIONS_ADVANCED_PATH', WP_PLUGIN_DIR . '/' . basename( dirname( __FILE__ ) ) . '/' );
-
+define( 'GB_SUGGESTIONS_ADVANCED_RESOURCES_URL', plugins_url( 'resources/', __FILE__ ) );
 
 // Load after all other plugins since we need to be compatible with groupbuyingsite
 add_action( 'plugins_loaded', 'gb_suggestions_advanced' );

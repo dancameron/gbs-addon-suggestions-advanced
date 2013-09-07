@@ -3,8 +3,8 @@
 class SA_Post_Type extends Group_Buying_Deal {
 
 	const TAX = 'deal_suggestions';
-	const TERM = 'deals';
-	const TERM_SLUG = 'suggested_deal';
+	const TERM = 'Suggested Deals';
+	const TERM_SLUG = 'deals';
 	const REWRITE_SLUG = 'suggested';
 	const QUERY_VAR = 'suggestion';
 	const MAX_VOTES = 1;
@@ -14,6 +14,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 	private static $meta_keys = array(
 		'author' => '_suggestion_author', // int
 		'threshold' => '_vote_threshold', // int
+		'votes' => '_suggestion_votes', // associated array
 		'voters' => '_suggestion_voters', // associated array
 		//'user_meta_prefix' => 'gb_suggested_by_', // string
 	);
@@ -25,7 +26,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		$plural = 'Suggestions';
 		$taxonomy_args = array(
 			'public' => FALSE,
-			'show_ui' => FALSE,
+			'show_ui' => TRUE,
 			'rewrite' => array(
 				'slug' => self::REWRITE_SLUG,
 				'with_front' => TRUE,
@@ -62,6 +63,10 @@ class SA_Post_Type extends Group_Buying_Deal {
 		parent::__construct( $id );
 	}
 
+	public static function get_url() {
+		return get_term_link( self::TERM_SLUG, self::TAX );
+	}
+
 	public function is_suggested_deal() {
 		$term = array_pop( wp_get_object_terms( $this->get_id(), self::TAX ) );
 		return $term->slug == self::TERM_SLUG;
@@ -73,10 +78,6 @@ class SA_Post_Type extends Group_Buying_Deal {
 
 	public function unmake_suggested_deal() {
 		wp_set_object_terms( $this->get_id(), array(), self::TAX );
-	}
-
-	public static function get_url() {
-		return get_term_link( self::TERM, self::TAX );
 	}
 
 	public function set_author( $user_id = 0 ) {
@@ -106,12 +107,30 @@ class SA_Post_Type extends Group_Buying_Deal {
 		if ( empty( $voters ) ) {
 			$voters = array();
 		}
-		$voters[$user_id] = $data;
+		do_action( 'gb_sa_set_vote', $user_id, $data );
+		$voters[$user_id][] = $data;
 		$this->save_post_meta( array( self::$meta_keys['voters'] => $voters ) );
+		return $voters;
 	}
 
 	public function get_voters() {
-		return $this->get_post_meta( self::$meta_keys['voters'] );
+		$meta = $this->get_post_meta( self::$meta_keys['voters'] );
+		if ( !is_array( $meta ) ) {
+			$meta = array();
+		}
+		return $meta;
+	}
+
+	public function set_votes( $votes ) {
+		$this->save_post_meta( array( self::$meta_keys['votes'] => $votes ) );
+	}
+
+	public function get_votes() {
+		$voters = $this->get_voters();
+		$votes = count( $voters );
+		// Set the votes as a meta field, mostly so the admin can sort based on a single meta field
+		$this->set_votes( $votes );
+		return $votes;
 	}
 
 	public function get_vote_by_user( $user_id = 0 ) {
@@ -120,7 +139,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		}
 		$vote = 0;
 		$voters = $this->get_voters();
-		if ( array_key_exists( $voters[$user_id] ) ) {
+		if ( array_key_exists( $user_id, $voters ) ) {
 			$vote = count( array_keys( $voters, $user_id, true ) );
 		}
 		return $vote;
@@ -130,7 +149,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
-		$votes = $this->get_votes_by_user( $user_id );
+		$votes = $this->get_vote_by_user( $user_id );
 		if ( $votes >= self::MAX_VOTES ) {
 			return FALSE;
 		}
@@ -142,14 +161,14 @@ class SA_Post_Type extends Group_Buying_Deal {
 		if ( !empty( $term->slug ) ) {
 			return $term->slug;
 		} else {
-			$return = wp_insert_term(
+			$term = wp_insert_term(
 				self::TERM, // the term
 				self::TAX, // the taxonomy
 				array(
-					'description'=> 'This is a suggested deal.',
+					'description'=> 'These are suggested deals.',
 					'slug' => self::TERM_SLUG )
 			);
-			return $return['slug'];
+			return self::TERM_SLUG;
 		}
 	}
 	/**
@@ -162,14 +181,14 @@ class SA_Post_Type extends Group_Buying_Deal {
 		// we only care if this is the query for vouchers
 		if ( ( self::is_deal_query( $wp_query ) || self::is_deal_tax_query( $wp_query ) || is_search() ) && !is_admin() && $query->query_vars['post_status'] != 'pending' ) {
 			// get all the user's purchases
-			$wp_query->set( 'tax_query', array( array( 'taxonomy' => self::TAX, 'field' => 'slug', 'terms' => array( self::TERM ), 'operator' => 'NOT IN' ) ) );
+			$wp_query->set( 'tax_query', array( array( 'taxonomy' => self::TAX, 'field' => 'slug', 'terms' => array( self::TERM_SLUG ), 'operator' => 'NOT IN' ) ) );
 		}
 		return $wp_query;
 	}
 
 	public static function is_suggestion_query( WP_Query $query = NULL ) {
 		$taxonomy = get_query_var( 'taxonomy' );
-		if ( $taxonomy == self::TAX || $taxonomy == self::TAX || $taxonomy == self::TAX ) {
+		if ( $taxonomy == self::TAX ) {
 			return TRUE;
 		}
 		return FALSE;
@@ -203,7 +222,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 				'orderby' => 'id',
 				'meta_query' => array(
 					array(
-						'key' => self::$meta_keys['user'],
+						'key' => self::$meta_keys['author'],
 						'value' => $user_id,
 						'type' => 'NUMERIC',
 					),
