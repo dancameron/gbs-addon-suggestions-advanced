@@ -104,7 +104,6 @@ function gb_get_suggested_votes_threshold( $deal_id = null ) {
 	}
 
 function gb_suggested_can_vote( $deal_id = 0, $user_id = 0 ) {
-	return TRUE;
 	if ( !is_user_logged_in() ) {
 		return FALSE;
 	}
