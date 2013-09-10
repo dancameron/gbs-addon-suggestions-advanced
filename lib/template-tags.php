@@ -16,16 +16,17 @@ function gb_suggestion_form( $print = true ) {
 					<input type="text" name="suggested_price" id="suggested_price_<?php the_ID() ?>" class="suggested_price" data-suggested-price="<?php echo gb_get_price() ?>00">
 					<div id="price_slider_range_<?php the_ID() ?>" class="price_slider_range" class="clearfix" data-form-id=<?php the_id() ?>></div>
 				</div>
-				
-				<?php if ( gb_get_suggestion_notification_preference() ): // Show only if preference isn't set ?>
+				<?php if ( !gb_get_suggestion_notification_preference() ): // Show only if preference isn't set ?>
 					<div class="suggested_notification_wrap">
 						<label for="suggested_price_<?php the_ID() ?>"><?php gb_e('Notification Preference:') ?></label>
 						<select name="notification_preference" class="notification_preference">
 							<option value="mobile"><?php gb_e('Mobile') ?></option>
 							<option value="email"><?php gb_e('Email') ?></option>
 						</select>
-						<?php if ( gb_get_users_mobile_number() ): // Shown only if mobile number isn't already set ?>
-							<input type="text" name="mobile_number" class="mobile_number" placeholder="<?php echo gb_get_users_mobile_number() ?>">
+						<?php if ( !gb_get_users_mobile_number() ): // Shown only if mobile number isn't already set 
+							$mobile_placeholder = ( gb_get_users_mobile_number() ) ? gb_get_users_mobile_number() : '18051231234' ;
+							?>
+							<input type="text" name="mobile_number" class="mobile_number" placeholder="<?php echo $mobile_placeholder ?>">
 						<?php endif ?>
 						<input type="text" name="email_address" class="email_address" value="<?php echo gb_get_user_email() ?>" readonly>
 					</div>
