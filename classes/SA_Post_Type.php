@@ -145,7 +145,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		if ( array_key_exists( $user_id, $voters ) ) {
 			$votes = count( $voters[$user_id] );
 		}
-		return $voters;
+		return $votes;
 	}
 
 	public function allowed_to_vote( $user_id = 0 ) {
