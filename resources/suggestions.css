@@ -1,3 +1,5 @@
+/* @override http://response.gbmu.dev/wp-content/plugins/gbs-addon-suggestions-advanced/resources/suggestions.css?ver=1 */
+
 .suggestion_thumbnail_wrap {
 	position: relative;
 	width: 217px;
@@ -5,17 +7,17 @@
 }
 .suggestion_wrap {
 	position: absolute;
-	bottom: 5px;
-	left: 5px;
-	width: 208px;
-	background-color: rgba(0,0,0,0.70);
-	padding-top: 10px;
-	padding-bottom: 5px;			
+	bottom: 0;
+	background-color: rgba(0,0,0,0.70);			
     -webkit-transition: padding 0.2s ease-in-out;
     -moz-transition: padding 0.2s ease-in-out;
     -o-transition: padding 0.2s ease-in-out;
     -ms-transition: padding 0.2s ease-in-out;
     transition: padding 0.2s ease-in-out;
+	right: 0;
+	left: 0;
+	padding: 10px 10px 5px;
+	font-size: .9em;
 }
 .suggestion_thumbnail_wrap:hover .suggestion_wrap {
 	padding-bottom: 20px;
@@ -23,6 +25,49 @@
 	margin-top: -57px;
 	z-index: 0;
 }
+
+.suggestion_wrap input.suggested_price {
+	background-color: transparent;
+	width: 3em;
+	padding: 0;
+}
+.suggested_price_wrap {
+	margin-bottom: 15px;
+}
+.price_slider_range {
+	margin-top: 5px;
+	margin-bottom: 10px;
+}
+
+.suggested_notification_wrap {
+	margin-bottom: 10px;
+	display: block;
+}
+.suggested_notification_wrap label {
+	display: block;
+	margin-bottom: 5px;
+}
+.suggested_notification_wrap input {
+	padding: 2px;
+	width: auto;
+	font-size: .8em;
+	background-color: rgba(254,255,254,0.9);
+}
+.suggested_notification_wrap input:focus {
+	background-color: rgba(254,255,254,1);
+}
+
+.suggestion_wrap .submit {
+	width: 100%;
+}
+
+.suggested_info_wrap {
+	font-size: 2em;
+	text-align: center;
+	padding-bottom: 10px;
+	padding-top: 5px;
+}
+
 .shop_theme .suggestion_wrap {
 	bottom: 25px;
 	left: 1px;
@@ -74,29 +119,4 @@
 .crowdfunding_theme .suggestion_wrap {
 	width: 300px;
 	left: 0;
-}
-.suggestion_wrap form {
-	float: right;
-	margin-right: 10px;
-	margin-top: -3px;
-	z-index: 10;
-	position: relative;
-    -webkit-transition: zoom 0.2s ease;
-    -moz-transition: zoom 0.2s ease;
-    -o-transition: zoom 0.2s ease;
-    -ms-transition: zoom 0.2s ease;
-    transition: zoom 0.2s ease;
-    zoom: 0.9;
-}
-.suggestion_thumbnail_wrap:hover .suggestion_wrap form {
-	zoom: 1;
-}
-.suggestion_wrap .suggested_info {
-	float: left;
-	margin-left: 10px;
-	font-weight: bold;
-	color: #fff;
-	white-space: nowrap;
-	font-size: 22px;
-	text-shadow: #000 1px 1px 2px;
 }

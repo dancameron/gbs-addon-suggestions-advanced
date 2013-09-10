@@ -7,6 +7,9 @@
 class SA_Admin extends Group_Buying_Controller {
 	
 	public static function init() {
+		
+		add_filter( 'views_edit-gb_deal', array( get_class(), 'modify_views' ) );
+
 		// Admin columns
 		add_filter( 'manage_edit-'.Group_Buying_Deal::POST_TYPE.'_columns', array( get_class(), 'register_columns' ) );
 		add_filter( 'manage_'.Group_Buying_Deal::POST_TYPE.'_posts_custom_column', array( get_class(), 'column_display' ), 10, 2 );
@@ -14,8 +17,16 @@ class SA_Admin extends Group_Buying_Controller {
 		add_filter( 'request', array( get_class(), 'column_orderby' ) );
 	}
 
+	public function modify_views( $views ) {
+		$term = get_term_by( 'slug', SA_Post_Type::get_term_slug(), SA_Post_Type::TAX );
+		$class = ( isset( $_GET[SA_Post_Type::TAX] ) ) ? 'class="current"' : '' ;
+		$views['suggested_deals'] = '<a href="'.esc_url ( add_query_arg( array( SA_Post_Type::TAX => $term->slug, 'post_type' => Group_Buying_Deal::POST_TYPE ), 'edit.php' ) ).'" '.$class.'>'.self::__('Suggestions').' <span class="count">('.$term->count.')</span></a>';
+		return $views;
+	}
+
 	public static function register_columns( $columns ) {
-		$columns['votes'] = self::__( 'Votes' );
+		$columns['votes'] = self::__( 'Total Votes' );
+		$columns['remaining_votes'] = self::__( 'Remaining Votes' );
 		return $columns;
 	}
 
@@ -33,6 +44,14 @@ class SA_Admin extends Group_Buying_Controller {
 			echo $suggested_deal->get_votes();
 			break;
 
+		case 'remaining_votes':
+			$votes = $suggested_deal->set_vote( get_current_user_id(), $data );
+			$total_votes = count( $votes );
+			$threshold = $suggested_deal->get_threshold();
+			$remaining = ( $threshold-$total_votes >= 0 ) ? $threshold-$total_votes : 0 ;
+			echo $remaining;
+			break;
+
 		default:
 			// code...
 			break;
@@ -41,6 +60,7 @@ class SA_Admin extends Group_Buying_Controller {
 
 	public function sortable_columns( $columns ) {
 		$columns['votes'] = 'votes';
+		$columns['remaining_votes'] = 'remaining_votes';
 		return $columns;
 	}
 

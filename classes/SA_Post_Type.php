@@ -15,7 +15,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		'author' => '_suggestion_author', // int
 		'threshold' => '_vote_threshold', // int
 		'votes' => '_suggestion_votes', // associated array
-		'voters' => '_suggestion_voters', // associated array
+		'voters' => '_suggestion_voters_v2', // associated array
 		//'user_meta_prefix' => 'gb_suggested_by_', // string
 	);
 
@@ -26,7 +26,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		$plural = 'Suggestions';
 		$taxonomy_args = array(
 			'public' => FALSE,
-			'show_ui' => TRUE,
+			'show_ui' => FALSE,
 			'rewrite' => array(
 				'slug' => self::REWRITE_SLUG,
 				'with_front' => TRUE,
@@ -77,6 +77,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 	}
 
 	public function unmake_suggested_deal() {
+		do_action( 'gb_suggestion_published', $this );
 		wp_set_object_terms( $this->get_id(), array(), self::TAX );
 	}
 
@@ -125,11 +126,13 @@ class SA_Post_Type extends Group_Buying_Deal {
 		$this->save_post_meta( array( self::$meta_keys['votes'] => $votes ) );
 	}
 
-	public function get_votes() {
+	public function get_votes( $refresh = TRUE ) {
 		$voters = $this->get_voters();
 		$votes = count( $voters );
-		// Set the votes as a meta field, mostly so the admin can sort based on a single meta field
-		$this->set_votes( $votes );
+		if ( $refresh ) {
+			// Set the votes as a meta field, mostly so the admin can sort based on a single meta field
+			$this->set_votes( $votes );
+		}
 		return $votes;
 	}
 
@@ -140,13 +143,13 @@ class SA_Post_Type extends Group_Buying_Deal {
 		$vote = 0;
 		$voters = $this->get_voters();
 		if ( array_key_exists( $user_id, $voters ) ) {
-			$vote = count( array_keys( $voters, $user_id, true ) );
+			$votes = count( $voters[$user_id] );
 		}
-		return $vote;
+		return $voters;
 	}
 
-	public function allowed_to_vote( $user_id = null ) {
-		if ( null === $user_id ) {
+	public function allowed_to_vote( $user_id = 0 ) {
+		if ( !$user_id ) {
 			$user_id = get_current_user_id();
 		}
 		$votes = $this->get_vote_by_user( $user_id );
@@ -214,7 +217,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 	 * @return array The IDs of the pending suggestions
 	 */
 	public static function get_pending_suggestions( $user_id ) {
-		$query = new WP_Query( 
+		$query = new WP_Query(
 			array(
 				'post_type' => self::POST_TYPE,
 				'post_status' => 'pending',

@@ -11,9 +11,9 @@ class SA_Twilio extends Group_Buying_Controller {
 
 		if ( !( isset( self::$twilio ) && is_a( self::$twilio, 'Services_Twilio' ) ) ) {
 
-			SMS_Options::init();
-			$account_sid = SMS_Options::$twilio_account; // Your Twilio account sid
-			$auth_token = SMS_Options::$twilio_auth; // Your Twilio auth token
+			SA_Options::init();
+			$account_sid = SA_Options::$twilio_account; // Your Twilio account sid
+			$auth_token = SA_Options::$twilio_auth; // Your Twilio auth token
 
 			try {
 				self::$twilio = new Services_Twilio( $account_sid, $auth_token );
@@ -36,8 +36,8 @@ class SA_Twilio extends Group_Buying_Controller {
 			try {
 				$twilio_client = self::init_twilio();
 
-				SMS_Options::init();
-				$twilio_number = '+'.preg_replace( "/[^0-9]/", '', SMS_Options::$twilio_number ); // Your Twilio auth token
+				SA_Options::init();
+				$twilio_number = '+'.preg_replace( "/[^0-9]/", '', SA_Options::$twilio_number ); // Your Twilio auth token
 
 				$message = $twilio_client->account->sms_messages->create(
 					$twilio_number, // From a Twilio number in your account

@@ -38,7 +38,9 @@ class SA_Templates extends Group_Buying_Controller {
 
 	public static function screen() {
 		if ( SA_Post_Type::is_suggestion_query() ) {
-			wp_enqueue_style( 'suggested_style', GB_SUGGESTIONS_ADVANCED_RESOURCES_URL.'suggestions.css', '', '1', 'screen' );
+			wp_enqueue_style( 'gb-timestamp-jquery-ui-css' );
+			wp_enqueue_style( 'gb_frontend_jquery_ui_style' );
+			wp_enqueue_style( 'suggested_style', GB_SUGGESTIONS_ADVANCED_RESOURCES_URL.'suggestions.css', array(), '1', 'screen' );
 		}
 	}
 
