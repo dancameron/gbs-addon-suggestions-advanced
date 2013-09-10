@@ -18,13 +18,18 @@
 
 	<div class="deal_meta contrast clearfix">
 
-		<div class="deal_meta_wrapper suggestion_wrap contrast">
-			<?php if ( gb_suggested_can_vote() ): ?>
-				<?php gb_suggestion_form();  ?>
-			<?php endif ?>
 
-			<span id="<?php the_ID(); ?>_cannot_vote" class="cannot_vote <?php if ( gb_suggested_can_vote() ) echo 'cloak' ?>"><?php gb_e('Thank you for your vote!')  ?></span>	
-			
+		<div class="deal_meta_wrapper suggestion_wrap contrast">
+			<?php if ( is_user_logged_in() ): ?>
+				<?php if ( gb_suggested_can_vote() ): ?>
+					<?php gb_suggestion_form();  ?>
+				<?php endif ?>
+
+				<span id="<?php the_ID(); ?>_cannot_vote" class="cannot_vote <?php if ( gb_suggested_can_vote() ) echo 'cloak' ?>"><?php gb_e('Thank you for your vote!')  ?></span>	
+				
+			<?php else: ?>
+				<span id="<?php the_ID(); ?>_cannot_vote" class="cannot_vote"><?php gb_e('You must be logged in to vote.')  ?></span>	
+			<?php endif ?>
 		</div><!-- .suggestion_wrap -->
 
 	</div>
