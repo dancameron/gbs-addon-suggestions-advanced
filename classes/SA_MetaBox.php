@@ -52,13 +52,19 @@ class SA_MetaBox {
 		
 		do_action( 'gb_suggestions_meta_box', $post->ID );
 		
-		echo '<span class="meta_box_block_divider"></span>';
+		echo '<span class="meta_box_block_divider"></span><br/>';
 
 		// Show current votes, high low
-		printf( '<p class="description">Mean/Average: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'mean' ) ) );
-		printf( '<p class="description">Median: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'median' ) ) );
-		printf( '<p class="description">Mode: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'mode' ) ) );
-		printf( '<p class="description">Range: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'range' ) ) );
+		printf( '<p class="description">Mean/Average: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'mean', 'all' ) ) );
+		printf( '<p class="description">Median: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'median', 'all' ) ) );
+		printf( '<p class="description">Mode: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'mode', 'all' ) ) );
+		printf( '<p class="description">Range: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'range', 'all' ) ) );
+
+		echo '<br/>';
+
+		
+		printf( '<p class="description">Low - Average: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'mean', 'low' ) ) );
+		printf( '<p class="description">High - Average: %s</p>', gb_get_formatted_money( SA_Voting::mmmr_prices( 'mean', 'high' ) ) );
 	}
 
 	public static function save_meta_box( $post_id, $post ) {

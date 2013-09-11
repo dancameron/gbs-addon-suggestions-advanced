@@ -119,7 +119,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		if ( !is_array( $meta ) ) {
 			$meta = array();
 		}
-		return $meta;
+		return array_filter($meta);
 	}
 
 	public function set_votes( $votes ) {

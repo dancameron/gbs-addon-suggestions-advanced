@@ -28,8 +28,14 @@
 
 .suggestion_wrap input.suggested_price {
 	background-color: transparent;
+	width: 2em;
+	padding: 0;
+}
+.suggestion_wrap input.suggested_price_high {
+	background-color: transparent;
 	width: 3em;
 	padding: 0;
+	margin-left: 1em;
 }
 .suggested_price_wrap {
 	margin-bottom: 15px;

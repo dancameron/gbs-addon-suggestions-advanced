@@ -36,6 +36,9 @@ class SA_Voting {
 		if ( isset( $data['suggested_price'] ) ) {
 			$data['suggested_price'] = preg_replace( "/[^0-9]/", "", $data['suggested_price'] );
 		}
+		if ( isset( $data['suggested_price_high'] ) ) {
+			$data['suggested_price_high'] = preg_replace( "/[^0-9]/", "", $data['suggested_price_high'] );
+		}
 
 		// Set vote
 		$votes = $suggested_deal->set_vote( get_current_user_id(), $data );
@@ -52,26 +55,40 @@ class SA_Voting {
 		}
 	}
 
-	public function get_prices( $suggestion_id = 0 ) {
+	public function get_prices( $suggestion_id = 0, $price_suggestions = 'default' ) {
 		if ( !$suggestion_id ) {
 			global $post;
 			$suggestion_id = $post->ID;
 		}
-		$suggestion = SA_Post_Type::get_instance( $post->ID );
+		$suggestion = SA_Post_Type::get_instance( $suggestion_id );
 		$votes = $suggestion->get_voters( FALSE );
 		$prices = array();
 		foreach ( $votes as $user_id => $user_votes ) {
 			foreach ( $user_votes as $key => $data ) {
-				$prices[] = $data['suggested_price'];
+				switch ( $price_suggestions ) {
+					case 'all':
+						$prices[] = $data['suggested_price'];
+						$prices[] = $data['suggested_price_high'];
+						break;
+					case 'high':
+						$prices[] = $data['suggested_price_high'];
+						break;
+					
+					case 'low':
+					default:
+						$prices[] = $data['suggested_price'];
+						break;
+				}
 			}
 		}
-		return $prices;
+		return array_filter($prices);
 	}
 
-	function mmmr_prices( $output = 'mean', $prices = array() ) {
-		if ( empty( $prices ) ) {
-			$prices = self::get_prices();
+	function mmmr_prices( $output = 'mean', $prices = 'default' ) {
+		if ( !is_array( $prices ) ) {
+			$prices = self::get_prices( 0, $prices );
 		}
+		$prices = $prices;
 		if ( empty( $prices ) ) {
 			return 'N/A';
 		}

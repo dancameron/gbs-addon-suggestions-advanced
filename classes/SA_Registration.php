@@ -12,7 +12,7 @@ class SA_Registration extends Group_Buying_Controller {
 
 		// registration hooks
 		add_filter( 'gb_account_registration_panes', array( get_class(), 'get_registration_panes' ), 100 );
-		add_filter( 'gb_validate_account_registration', array( get_class(), 'validate_account_fields' ), 10, 4 );
+		// add_filter( 'gb_validate_account_registration', array( get_class(), 'validate_account_fields' ), 10, 4 );
 		add_action( 'gb_registration', array( get_class(), 'process_registration' ), 50, 5 );
 
 		// Add the options to the account edit screens

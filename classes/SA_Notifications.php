@@ -28,7 +28,7 @@ class SA_Notifications extends Group_Buying_Controller {
 			'shortcodes' => array( 'date', 'name', 'username', 'site_title', 'site_url', 'deal_url', 'deal_title', 'merchant_name' ),
 			'default_title' => self::__( 'SMS Alert: Suggestion Published' ),
 			'default_content' => '',
-			'allow_preference' => FALSE
+			'allow_preference' => TRUE
 		);
 		$notifications[self::NOTIFICATION_TYPE] = array(
 			'name' => self::__( 'E-Mail Alert: Suggestion Published' ),

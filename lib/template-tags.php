@@ -12,9 +12,10 @@ function gb_suggestion_form( $print = true ) {
 			?><form action="<?php gb_suggestion_url() ?>" class="gb_vote_up" id="<?php the_ID() ?>_vote_up" data-form-id=<?php the_id() ?>>
 				
 				<div class="suggested_price_wrap">
-					<label for="suggested_price_<?php the_ID() ?>"><?php gb_e('Suggest a price:') ?></label>
-					<input type="text" name="suggested_price" id="suggested_price_<?php the_ID() ?>" class="suggested_price" data-suggested-price="<?php echo gb_get_price() ?>00">
-					<div id="price_slider_range_<?php the_ID() ?>" class="price_slider_range" class="clearfix" data-form-id=<?php the_id() ?>></div>
+					<label for="suggested_price_<?php the_ID() ?>"><?php gb_e('Suggest a price range:') ?></label>
+
+					<input type="text" name="suggested_price" id="suggested_price_<?php the_ID() ?>" class="suggested_price" data-suggested-price="<?php echo max( gb_get_price()-apply_filters( 'gb_suggestions_range', 30 ), 5 ) ?>" /> <?php gb_e('and') ?> <input type="text" name="suggested_price_high" id="suggested_price_high_<?php the_ID() ?>" class="suggested_price_high" data-suggested-price-high="<?php echo gb_get_price()+apply_filters( 'gb_suggestions_range', 30 ) ?>" />
+					<div id="price_slider_range_<?php the_ID() ?>" class="price_slider_range" class="clearfix" data-form-id=<?php the_ID() ?>></div>
 				</div>
 				<?php if ( !gb_get_suggestion_notification_preference() ): // Show only if preference isn't set ?>
 					<div class="suggested_notification_wrap">
@@ -28,12 +29,12 @@ function gb_suggestion_form( $print = true ) {
 							?>
 							<input type="text" name="mobile_number" class="mobile_number" placeholder="<?php echo $mobile_placeholder ?>">
 						<?php endif ?>
-						<input type="text" name="email_address" class="email_address" value="<?php echo gb_get_user_email() ?>" readonly>
+						<input type="text" name="email_address" class="email_address" value="<?php echo gb_get_user_email() ?>" readonly />
 					</div>
 				<?php endif ?>
 				
-				<input type="hidden" name="vote_suggestion_id" value="<?php echo get_the_ID() ?>">
-				<input type="hidden" name="<?php echo SA_Voting::NONCE_NAME ?>" value="<?php echo wp_create_nonce( SA_Voting::NONCE ) ?>">
+				<input type="hidden" name="vote_suggestion_id" value="<?php echo get_the_ID() ?>" />
+				<input type="hidden" name="<?php echo SA_Voting::NONCE_NAME ?>" value="<?php echo wp_create_nonce( SA_Voting::NONCE ) ?>" />
 
 				<input class="form-submit submit" type="submit" value="<?php gb_e('Vote'); ?>" name="gb_suggestion_submit" />
 

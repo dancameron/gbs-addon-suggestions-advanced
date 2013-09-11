@@ -28,7 +28,7 @@
 				<span id="<?php the_ID(); ?>_cannot_vote" class="cannot_vote <?php if ( gb_suggested_can_vote() ) echo 'cloak' ?>"><?php gb_e('Thank you for your vote!')  ?></span>	
 				
 			<?php else: ?>
-				<span id="<?php the_ID(); ?>_cannot_vote" class="cannot_vote"><?php gb_e('You must be logged in to vote.')  ?></span>	
+				<span id="<?php the_ID(); ?>_cannot_vote" class="cannot_vote"><?php printf( gb__('You must be <a href="%s">logged in</a> to vote.'), wp_login_url( get_permalink() ) )  ?></span>	
 			<?php endif ?>
 		</div><!-- .suggestion_wrap -->
 

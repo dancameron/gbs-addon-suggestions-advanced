@@ -20,8 +20,8 @@ jQuery(document).ready(function($){
 		submission_data = $form.serialize();
 
 		if ( !(~jQuery.inArray(suggestion_id, enabled_forms)) ) {
-			jQuery('.suggested_price_wrap').show();
-			jQuery('.suggested_notification_wrap').show();
+			jQuery( '#' + suggestion_id + '_vote_up .suggested_price_wrap' ).show();
+			jQuery( '#' + suggestion_id + '_vote_up .suggested_notification_wrap' ).show();
 			form_enabled = true;
 			enabled_forms.push( suggestion_id );
 			return;
@@ -43,16 +43,23 @@ jQuery(document).ready(function($){
 
 	jQuery( ".gb_vote_up" ).each( function(i, obj) {
 		var form_id = jQuery(obj).data('form-id'),
-			price_input = $( '#' + form_id + '_vote_up .suggested_price' );
-			price_value = price_input.data('suggested-price');
+			price_input = $( '#suggested_price_' + form_id ),
+			price_input_high = $( '#suggested_price_high_' + form_id ),
+			price_value = price_input.data('suggested-price'),
+			price_value_high = price_input_high.data('suggested-price-high');
+		
 		$( price_input ).val( "$" + price_value );
+		$( price_input_high ).val( "$" + price_value_high );
+		
 		$( '#' + form_id + '_vote_up .price_slider_range' ).slider({
-			range: 'min',
+			range: true,
 			min: 0,
-			max: 250,
-			value: price_value,
+			max: price_value_high+100,
+			values: [price_value, price_value_high],
 			slide: function( event, ui ) {
-				price_input.val( "$" + ui.value );
+				price_input.val( "$" + ui.values[ 0 ] );
+				console.log(form_id);
+				price_input_high.val( "$" + ui.values[ 1 ] );
 			}
 		});
 	});
