@@ -182,19 +182,21 @@ class SA_Post_Type extends Group_Buying_Deal {
 	 */
 	public static function filter_query( WP_Query $wp_query ) {
 		// we only care if this is the query for deals
-		if ( !self::is_suggestion_query() && !is_admin() ) {
+		if ( !self::is_suggestion_query( $wp_query ) && !is_admin() ) {
 			// remove all suggestions
 			$wp_query->set( 'tax_query', array( array( 'taxonomy' => self::TAX, 'field' => 'slug', 'terms' => array( self::TERM_SLUG ), 'operator' => 'NOT IN' ) ) );
 		}
 		return $wp_query;
 	}
 
-	public static function is_suggestion_query( WP_Query $query = NULL ) {
+	public static function is_suggestion_query( WP_Query $wp_query = NULL ) {
+		if ( is_a( $wp_query, 'WP_Query' ) ) {
+			return $wp_query->is_tax( self::TAX, self::TERM_SLUG );	
+		}
 		$taxonomy = get_query_var( 'taxonomy' );
 		if ( $taxonomy == self::TAX ) {
 			return TRUE;
 		}
-		return FALSE;
 	}
 
 	/**
