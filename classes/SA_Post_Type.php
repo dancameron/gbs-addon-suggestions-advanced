@@ -181,9 +181,9 @@ class SA_Post_Type extends Group_Buying_Deal {
 	 * @return void
 	 */
 	public static function filter_query( WP_Query $wp_query ) {
-		// we only care if this is the query for vouchers
-		if ( ( self::is_deal_query( $wp_query ) || self::is_deal_tax_query( $wp_query ) || is_search() ) && !is_admin() && $query->query_vars['post_status'] != 'pending' ) {
-			// get all the user's purchases
+		// we only care if this is the query for deals
+		if ( !self::is_suggestion_query() && !is_admin() ) {
+			// remove all suggestions
 			$wp_query->set( 'tax_query', array( array( 'taxonomy' => self::TAX, 'field' => 'slug', 'terms' => array( self::TERM_SLUG ), 'operator' => 'NOT IN' ) ) );
 		}
 		return $wp_query;
