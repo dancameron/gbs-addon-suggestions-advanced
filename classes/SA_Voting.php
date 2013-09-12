@@ -8,11 +8,15 @@ class SA_Voting {
 
 	const NONCE_NAME = 'sa_voting_nonce_name';
 	const NONCE = 'sa_voting_nonce';
+	const ACCOUNT_META_SUGGESTED = '_voted_suggestions';
 	
 	public function init() {
 
 		// AJAX Vote
 		add_action( 'wp_ajax_sa_voting',  array( get_class(), 'ajax_vote' ), 10, 0 );
+
+		// add suggestion to account meta
+		add_action( 'gb_sa_set_vote', array( get_class(), 'mark_vote_on_account' ), 10, 3 );
 
 		if ( !is_admin() ) {
 			add_filter( 'wp_print_scripts', array( get_class(), 'scripts' ) );
@@ -47,6 +51,24 @@ class SA_Voting {
 		$remaining = ( $threshold-$total_votes >= 0 ) ? $threshold-$total_votes : 0 ;
 		echo $remaining;
 		die();
+	}
+
+	public function mark_vote_on_account( $user_id = 0, $suggestion_id = 0, $data = array() ) {
+		if ( !$user_id ) {
+			$user_id = get_current_user_id();
+		}
+		$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
+		$suggestions = get_post_meta( $account_id, self::ACCOUNT_META_SUGGESTED, TRUE );
+		if ( !is_array( $suggestions ) ) {
+			$suggestions = array();
+		}
+		$suggestions[] = $suggestion_id;
+		update_post_meta( $account_id, self::ACCOUNT_META_SUGGESTED, $suggestions );
+	}
+
+	public static function suggestions_user_voted( $user_id ) {
+		$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
+		return get_post_meta( $account_id, self::ACCOUNT_META_SUGGESTED, TRUE );
 	}
 
 	public static function scripts() {

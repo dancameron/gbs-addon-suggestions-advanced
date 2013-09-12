@@ -14,7 +14,7 @@ class SA_Notifications extends Group_Buying_Controller {
 		add_filter( 'gb_notification_shortcodes', array( get_class(), 'register_notification_shortcode' ), 10, 1 );
 
 		// Voting hook, check for a preference
-		add_action( 'gb_sa_set_vote', array( get_class(), 'maybe_add_notification_preference' ), 10, 2 );
+		add_action( 'gb_sa_set_vote', array( get_class(), 'maybe_add_notification_preference' ), 10, 3 );
 
 		// Meta Box
 		add_action( 'gb_suggested_deal_published', array( get_class(), 'maybe_send_notifications' ) );
@@ -129,13 +129,13 @@ class SA_Notifications extends Group_Buying_Controller {
 	// Notification Preference //
 	//////////////////////////////
 	
-	public function maybe_add_notification_preference( $user_id = 0, $data = array() ) {
+	public function maybe_add_notification_preference( $user_id = 0, $suggestion_id = 0, $data = array() ) {
 		if ( isset( $data['notification_preference'] ) && $data['notification_preference'] != '' ) {
 			self::set_preference( $user_id, $data['notification_preference'] );
 		}
 	}	
 
-	public function set_preference( $user_id, $preference = 'email' ) {
+	public function set_preference( $user_id = 0, $preference = 'email' ) {
 		if ( !$user_id ) {
 			$user_id = get_current_user_id();
 		}

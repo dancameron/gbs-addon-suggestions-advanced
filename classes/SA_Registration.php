@@ -8,7 +8,7 @@ class SA_Registration extends Group_Buying_Controller {
 	public static function init() {
 
 		// Voting hook, check if mobile number needs to be changed
-		add_action( 'gb_sa_set_vote', array( get_class(), 'maybe_change_number' ), 10, 2 );
+		add_action( 'gb_sa_set_vote', array( get_class(), 'maybe_change_number' ), 10, 3 );
 
 		// registration hooks
 		add_filter( 'gb_account_registration_panes', array( get_class(), 'get_registration_panes' ), 100 );
@@ -29,7 +29,7 @@ class SA_Registration extends Group_Buying_Controller {
 
 	}
 
-	public function maybe_change_number( $user_id = 0, $data = array() ) {
+	public function maybe_change_number( $user_id = 0, $suggestion_id = 0, $data = array() ) {
 		if ( isset( $data['mobile_number'] ) && ( strlen( $data['mobile_number'] ) > 7 ) ) {
 			$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
 			self::set_mobile_number( $account_id, $data['mobile_number'] );

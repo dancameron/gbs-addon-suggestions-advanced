@@ -12,11 +12,11 @@ class SA_Post_Type extends Group_Buying_Deal {
 	private static $instances = array();
 
 	private static $meta_keys = array(
+		// deal meta
 		'author' => '_suggestion_author', // int
 		'threshold' => '_vote_threshold', // int
 		'votes' => '_suggestion_votes', // associated array
-		'voters' => '_suggestion_voters_v2a', // associated array
-		//'user_meta_prefix' => 'gb_suggested_by_', // string
+		'voters' => '_suggestion_voters_v3b', // associated array
 	);
 
 	public static function init() {
@@ -108,7 +108,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		if ( empty( $voters ) ) {
 			$voters = array();
 		}
-		do_action( 'gb_sa_set_vote', $user_id, $data );
+		do_action( 'gb_sa_set_vote', $user_id, $this->get_id(), $data );
 		$voters[$user_id][] = $data;
 		$this->save_post_meta( array( self::$meta_keys['voters'] => $voters ) );
 		return $voters;
@@ -182,7 +182,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 	 */
 	public static function filter_query( WP_Query $wp_query ) {
 		// we only care if this is the query for deals
-		if ( !self::is_suggestion_query( $wp_query ) && !is_admin() ) {
+		if ( !isset( $wp_query->query_vars['by_pass_suggestion_filter'] ) && !self::is_suggestion_query( $wp_query ) && !is_admin() ) {
 			// remove all suggestions
 			$wp_query->set( 'tax_query', array( array( 'taxonomy' => self::TAX, 'field' => 'slug', 'terms' => array( self::TERM_SLUG ), 'operator' => 'NOT IN' ) ) );
 		}
@@ -209,6 +209,31 @@ class SA_Post_Type extends Group_Buying_Deal {
 	public static function get_suggestions_by_user( $user_id ) {
 		$suggestion_ids = self::find_by_meta( self::POST_TYPE, array( self::$meta_keys['author'] => $user_id ) );
 		return $suggestion_ids;
+	}
+
+	/**
+	 * Get a list of all suggestions for the given user
+	 *
+	 * @static
+	 * @param int     $deal_id
+	 * @return array The IDs of the pending suggestions
+	 */
+	public static function get_all_suggestions( $user_id ) {
+		$query = new WP_Query(
+			array(
+				'post_type' => self::POST_TYPE,
+				'posts_per_page' => -1,
+				'orderby' => 'id',
+				'meta_query' => array(
+					array(
+						'key' => self::$meta_keys['author'],
+						'value' => $user_id,
+						'type' => 'NUMERIC',
+					),
+				),
+			) );
+		$posts = get_posts( $args );
+		return $posts;
 	}
 
 	/**
