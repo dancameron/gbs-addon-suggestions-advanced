@@ -16,7 +16,7 @@ class SA_Post_Type extends Group_Buying_Deal {
 		'author' => '_suggestion_author', // int
 		'threshold' => '_vote_threshold', // int
 		'votes' => '_suggestion_votes', // associated array
-		'voters' => '_suggestion_voters_v3b', // associated array
+		'voters' => '_suggestion_voters_v4a', // associated array
 	);
 
 	public static function init() {

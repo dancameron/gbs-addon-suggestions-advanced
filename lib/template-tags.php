@@ -24,11 +24,10 @@ function gb_suggestion_form( $print = true ) {
 							<option value="mobile"><?php gb_e('Mobile') ?></option>
 							<option value="email"><?php gb_e('Email') ?></option>
 						</select>
-						<?php if ( !gb_get_users_mobile_number() ): // Shown only if mobile number isn't already set 
-							$mobile_placeholder = ( gb_get_users_mobile_number() ) ? gb_get_users_mobile_number() : '18051231234' ;
-							?>
-							<input type="text" name="mobile_number" class="mobile_number" placeholder="<?php echo $mobile_placeholder ?>">
-						<?php endif ?>
+						
+						<?php 
+							$mobile_placeholder = ( gb_get_users_mobile_number() ) ? gb_get_users_mobile_number() : '18051231234' ; ?>
+						<input type="text" name="mobile_number" class="mobile_number" placeholder="<?php echo $mobile_placeholder ?>">
 						<input type="text" name="email_address" class="email_address" value="<?php echo gb_get_user_email() ?>" readonly />
 					</div>
 				<?php endif ?>

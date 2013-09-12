@@ -2,10 +2,9 @@
 
 class SA_Notifications extends Group_Buying_Controller {
 
-	const NOTIFICATION_PREFERENCE = 'gb_sms_notes_notifications_sent_v2';
 	const NOTIFICATION_SMS_TYPE = 'gb_sms_suggestion_notification';
 	const NOTIFICATION_TYPE = 'gb_email_suggestion_notification';
-	const NOTIFICATIONS_SENT = 'gb_suggested_notifications_sent_v2';
+	const NOTIFICATIONS_SENT = 'gb_suggested_notifications_sent_v4a';
 
 	public static function init() {
 
@@ -57,17 +56,8 @@ class SA_Notifications extends Group_Buying_Controller {
 		$votes = $suggested_deal->get_voters();
 		foreach ( $votes as $user_id => $vote ) {
 			foreach ( $vote as $data ) {
-				switch ( $data['notification_preference'] ) {
-					case 'mobile':
-					case 'sms':
-						self::send_sms_notification( $suggested_deal, $user_id, $data );
-						break;
-					case 'email':
-						self::send_notification( $suggested_deal, $user_id, $data );
-						break;
-					default:
-						break;
-				}
+				self::send_sms_notification( $suggested_deal, $user_id, $data );
+				self::send_notification( $suggested_deal, $user_id, $data );
 			}
 		}
 		update_post_meta( $suggested_deal->get_id(), self::NOTIFICATIONS_SENT, time() );
@@ -131,17 +121,33 @@ class SA_Notifications extends Group_Buying_Controller {
 	
 	public function maybe_add_notification_preference( $user_id = 0, $suggestion_id = 0, $data = array() ) {
 		if ( isset( $data['notification_preference'] ) && $data['notification_preference'] != '' ) {
-			self::set_preference( $user_id, $data['notification_preference'] );
-		}
-	}	
+			$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
+			$notifications = get_post_meta( $account_id, '_'.Group_Buying_Notifications::NOTIFICATION_SUB_OPTION, TRUE );
+			error_log( 'data' . print_r( $data, TRUE ) );
+			error_log( 'before' . print_r( $notifications, TRUE ) );
+			// determine preference
+			switch ( $data['notification_preference'] ) {
+				case 'mobile':
+				case 'sms':
+					$notifications[] = self::NOTIFICATION_SMS_TYPE;
+					// Unset the email notification since sms is the preference
+					foreach ( array_keys( $notifications, self::NOTIFICATION_TYPE, true ) as $key ) {
+						unset( $notifications[$key] );
+					}
+					break;
 
-	public function set_preference( $user_id = 0, $preference = 'email' ) {
-		if ( !$user_id ) {
-			$user_id = get_current_user_id();
+				case 'email':
+				default:
+					$notifications[] = self::NOTIFICATION_TYPE;
+					// unset SMS since it's the preference
+					foreach ( array_keys( $notifications, self::NOTIFICATION_SMS_TYPE, true ) as $key ) {
+						unset( $notifications[$key] );
+					}
+					break;
+			}
+			error_log( 'after' . print_r( $notifications, TRUE ) );
+			update_post_meta( $account_id, '_'.Group_Buying_Notifications::NOTIFICATION_SUB_OPTION, $notifications );
 		}
-		$preference = ( $preference != ( 'mobile' || 'email' ) ) ? 'email' : $preference ;
-		$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
-		update_post_meta( $account_id, '_'.self::NOTIFICATION_PREFERENCE, $preference );
 	}
 
 	public function get_preference( $user_id ) {
@@ -149,6 +155,14 @@ class SA_Notifications extends Group_Buying_Controller {
 			$user_id = get_current_user_id();
 		}
 		$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
-		return get_post_meta( $account_id, '_'.self::NOTIFICATION_PREFERENCE, TRUE );
+		$notifications = get_post_meta( $account_id, '_'.Group_Buying_Notifications::NOTIFICATION_SUB_OPTION, TRUE );
+		
+		if ( array_search( self::NOTIFICATION_SMS_TYPE, $notifications ) !== false )
+			return 'mobile';
+
+		if ( array_search( self::NOTIFICATION_TYPE, $notifications ) !== false )
+			return 'email';
+
+		return FALSE;
 	}
 }
