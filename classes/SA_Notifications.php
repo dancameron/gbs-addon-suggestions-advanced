@@ -55,7 +55,6 @@ class SA_Notifications extends Group_Buying_Controller {
 
 	public function maybe_send_notifications( $suggested_deal ) {
 		$votes = $suggested_deal->get_voters();
-		error_log( 'votes' . print_r( $votes, TRUE ) );
 		foreach ( $votes as $user_id => $vote ) {
 			foreach ( $vote as $data ) {
 				switch ( $data['notification_preference'] ) {
@@ -111,7 +110,7 @@ class SA_Notifications extends Group_Buying_Controller {
 		$sms = SA_Twilio::send_sms( $number, $message );
 	}
 
-	public function send_notification() {
+	public function send_notification( $suggested_deal ) {
 		// $message
 		$merchant_id = $suggested_deal->get_merchant_id();
 		$merchant_name = get_the_title( $merchant_id );
