@@ -45,8 +45,7 @@ class SA_Admin extends Group_Buying_Controller {
 			break;
 
 		case 'remaining_votes':
-			$votes = $suggested_deal->set_vote( get_current_user_id(), $data );
-			$total_votes = count( $votes );
+			$total_votes = $suggested_deal->get_votes();
 			$threshold = $suggested_deal->get_threshold();
 			$remaining = ( $threshold-$total_votes >= 0 ) ? $threshold-$total_votes : 0 ;
 			echo $remaining;
