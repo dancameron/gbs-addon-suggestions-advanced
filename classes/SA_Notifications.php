@@ -2,7 +2,7 @@
 
 class SA_Notifications extends Group_Buying_Controller {
 
-	const NOTIFICATION_PREFERENCE = 'gb_sms_notes_notifications_sent';
+	const NOTIFICATION_PREFERENCE = 'gb_sms_notes_notifications_sent_v2';
 	const NOTIFICATION_SMS_TYPE = 'gb_sms_suggestion_notification';
 	const NOTIFICATION_TYPE = 'gb_email_suggestion_notification';
 	const NOTIFICATIONS_SENT = 'gb_suggested_notifications_sent_v2';
