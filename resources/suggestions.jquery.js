@@ -36,6 +36,7 @@ jQuery(document).ready(function($){
 		function( data ) {
 			$form.fadeOut();
 			$( '#' + suggestion_id + '_cannot_vote' ).show();
+			$('.suggested_notification_wrap').remove(); // don't allow for any more notification preferences to be captured.
 			$( '#' + suggestion_id + '_vote_result' ).html(data);
 		});
 
