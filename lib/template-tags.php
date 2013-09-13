@@ -26,7 +26,7 @@ function gb_suggestion_form( $print = true ) {
 						</select>
 						
 						<?php 
-							$mobile_placeholder = ( gb_get_users_mobile_number() ) ? gb_get_users_mobile_number() : '18051231234' ; ?>
+							$mobile_placeholder = ( gb_get_users_mobile_number() ) ? gb_get_users_mobile_number() : gb__('18051231234') ; ?>
 						<input type="text" name="mobile_number" class="mobile_number" placeholder="<?php echo $mobile_placeholder ?>">
 						<input type="text" name="email_address" class="email_address" value="<?php echo gb_get_user_email() ?>" readonly />
 					</div>
