@@ -4,7 +4,7 @@ class SA_Notifications extends Group_Buying_Controller {
 
 	const NOTIFICATION_SMS_TYPE = 'gb_sms_suggestion_notification';
 	const NOTIFICATION_TYPE = 'gb_email_suggestion_notification';
-	const NOTIFICATIONS_SENT = 'gb_suggested_notifications_sent_v4a';
+	const NOTIFICATIONS_SENT = 'gb_suggested_notifications_sent_v4h';
 
 	public static function init() {
 
@@ -81,7 +81,7 @@ class SA_Notifications extends Group_Buying_Controller {
 	// Notifications //
 	///////////////////
 	
-	public function send_sms_notification( $suggested_deal, $user_id, $data = array() ) {
+	public function send_sms_notification( $suggested_deal, $user_id, $vote_data = array() ) {
 		// $number
 		$account = Group_Buying_Account::get_instance( $user_id );
 		$number = SA_Registration::get_mobile_number( $account );
@@ -92,25 +92,35 @@ class SA_Notifications extends Group_Buying_Controller {
 		$data = array(
 				'user_id' => $user_id,
 				'deal' => $suggested_deal,
-				'merchant_name' => $merchant_name
+				'merchant_name' => $merchant_name,
+				'vote_date' => $vote_data
 			);
 		$message = Group_Buying_Notifications::get_notification_content( self::NOTIFICATION_SMS_TYPE, $data );
+
+		// check if disabled
+		if ( Group_Buying_Notifications::user_disabled_notification( self::NOTIFICATION_SMS_TYPE, $account ) )
+			return;
 
 		// And send
 		$sms = SA_Twilio::send_sms( $number, $message );
 	}
 
-	public function send_notification( $suggested_deal ) {
+	public function send_notification( $suggested_deal, $user_id, $vote_data = array() ) {
 		// $message
+		$account = Group_Buying_Account::get_instance( $user_id );
 		$merchant_id = $suggested_deal->get_merchant_id();
 		$merchant_name = get_the_title( $merchant_id );
 		$data = array(
 				'user_id' => $user_id,
 				'deal' => $suggested_deal,
-				'merchant_name' => $merchant_name
+				'merchant_name' => $merchant_name,
+				'vote_date' => $vote_data
 			);
-
 		$to = Group_Buying_Notifications::get_user_email( $user_id );
+
+		// check if disabled
+		if ( Group_Buying_Notifications::user_disabled_notification( self::NOTIFICATION_TYPE, $account ) )
+			return;
 
 		Group_Buying_Notifications::send_notification( self::NOTIFICATION_TYPE, $data, $to );
 	}
@@ -123,8 +133,6 @@ class SA_Notifications extends Group_Buying_Controller {
 		if ( isset( $data['notification_preference'] ) && $data['notification_preference'] != '' ) {
 			$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
 			$notifications = get_post_meta( $account_id, '_'.Group_Buying_Notifications::NOTIFICATION_SUB_OPTION, TRUE );
-			error_log( 'data' . print_r( $data, TRUE ) );
-			error_log( 'before' . print_r( $notifications, TRUE ) );
 			// determine preference
 			switch ( $data['notification_preference'] ) {
 				case 'mobile':
@@ -145,7 +153,6 @@ class SA_Notifications extends Group_Buying_Controller {
 					}
 					break;
 			}
-			error_log( 'after' . print_r( $notifications, TRUE ) );
 			update_post_meta( $account_id, '_'.Group_Buying_Notifications::NOTIFICATION_SUB_OPTION, $notifications );
 		}
 	}
@@ -157,11 +164,13 @@ class SA_Notifications extends Group_Buying_Controller {
 		$account_id = Group_Buying_Account::get_account_id_for_user( $user_id );
 		$notifications = get_post_meta( $account_id, '_'.Group_Buying_Notifications::NOTIFICATION_SUB_OPTION, TRUE );
 		
-		if ( array_search( self::NOTIFICATION_SMS_TYPE, $notifications ) !== false )
-			return 'mobile';
+		if ( is_array( $notifications ) ) {
+			if ( array_search( self::NOTIFICATION_SMS_TYPE, $notifications ) !== false )
+				return 'mobile';
 
-		if ( array_search( self::NOTIFICATION_TYPE, $notifications ) !== false )
-			return 'email';
+			if ( array_search( self::NOTIFICATION_TYPE, $notifications ) !== false )
+				return 'email';
+		}
 
 		return FALSE;
 	}
