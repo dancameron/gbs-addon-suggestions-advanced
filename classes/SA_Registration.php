@@ -177,7 +177,7 @@ class SA_Registration extends Group_Buying_Controller {
 				'label' => self::__( 'Mobile Number' ), // the label of the field
 				'type' => 'text', // type of field (e.g. text, textarea, checkbox, etc. )
 				'required' => FALSE, // If this is false then don't validate the post in validate_account_fields
-				'placeholder' => 'X-XXX-XXX-XXXX' // the default value
+				'placeholder' => self::__('X-XXX-XXX-XXXX') // the default value
 			),
 			// add new fields here within the current array.
 		);
