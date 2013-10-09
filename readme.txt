@@ -2,7 +2,7 @@ Installation
 ============
 1. Upload and activate plugin
 
-2. Go to Group Buying > General Options, scroll to bottom of page and check the box for Deal Suggestions and hit the save changes button
+2. Go to Group Buying > Add-ons, and active this add-on.
 
 3. Go to Appearance > Menus, and add a Custom Link to your menu using the URL http://your-site.com/merchant/submit-deal/?suggestion=1 where "your-site.com" is your site's address. Enter "Suggest a deal" for the Label and hit the "Add to Menu" link. Save the menu.
 
